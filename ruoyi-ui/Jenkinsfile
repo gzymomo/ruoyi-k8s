@@ -1,0 +1,96 @@
+pipeline {
+    agent {
+        node {
+            label 'nodejs'
+        }
+
+    }
+    stages {
+        stage('拉取代码') {
+            agent none
+            steps {
+                container('nodejs') {
+                    git(url: 'http://gitlab.pacteraedge.com/pacteraedge-develop/sky-demo.git', credentialsId: 'gitee-id', branch: 'master', changelog: true, poll: false)
+                    sh 'ls -al'
+                }
+
+            }
+        }
+
+        stage('项目编译') {
+            agent none
+            steps {
+                container('nodejs') {
+                    sh 'ls ruoyi-ui'
+                    sh 'npm install'
+                    sh 'npm run build:stage'
+                    sh 'ls'
+                }
+
+            }
+        }
+
+        stage('构建镜像') {
+            agent none
+            steps {
+                container('nodejs') {
+                    sh 'ls ruoyi-ui'
+                    sh 'docker build -t ruoyi-ui:latest -f Dockerfile  .'
+                }
+
+            }
+        }
+
+        stage('推送镜像') {
+            agent none
+            steps {
+                container('nodejs') {
+                    withCredentials([usernamePassword(credentialsId : 'aliyun-docker-registry' ,usernameVariable : 'DOCKER_USER_VAR' ,passwordVariable : 'DOCKER_PWD_VAR' ,)]) {
+                        sh 'echo "$DOCKER_PWD_VAR" | docker login $REGISTRY -u "$DOCKER_USER_VAR" --password-stdin'
+                        sh 'docker tag ruoyi-ui:latest $REGISTRY/$DOCKERHUB_NAMESPACE/ruoyi-ui:SNAPSHOT-$BUILD_NUMBER'
+                        sh 'docker push  $REGISTRY/$DOCKERHUB_NAMESPACE/ruoyi-ui:SNAPSHOT-$BUILD_NUMBER'
+                    }
+
+                }
+
+            }
+        }
+
+        stage('部署到dev环境') {
+            agent none
+            steps {
+               container ('nodejs') {
+                 withCredentials([
+                   kubeconfigFile(
+                     credentialsId: env.KUBECONFIG_CREDENTIAL_ID,
+                     variable: 'KUBECONFIG')
+                     ]) {
+                     sh 'envsubst < deploy/deploy.yml | kubectl apply -f -'
+                }
+            }
+
+            }
+        }
+
+        //1、配置全系统的邮件：                   全系统的监控
+        //2、修改ks-jenkins的配置，里面的邮件；   流水线发邮件
+        stage('发送确认邮件') {
+            agent none
+            steps {
+                mail(to: 'haotian.liu@pacteraedge.com', subject: 'ruoyi-ui构建结果', body: "构建成功了  $BUILD_NUMBER")
+            }
+        }
+
+    }
+    environment {
+        DOCKER_CREDENTIAL_ID = 'dockerhub-id'
+        GITHUB_CREDENTIAL_ID = 'github-id'
+        KUBECONFIG_CREDENTIAL_ID = 'demo-kubeconfig'
+        REGISTRY = 'harbor.bk.rfios.com'
+        DOCKERHUB_NAMESPACE = 'ks-devops-harbor'
+        GITHUB_ACCOUNT = 'kubesphere'
+        APP_NAME = 'devops-java-sample'
+        ALIYUNHUB_NAMESPACE = 'ks-devops-harbor'
+        HARBOR_CREDENTIAL = credentials('harbor-cl')
+    }
+}

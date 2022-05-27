@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ruoyi-ui
+  name: ruoyi-ui
+  namespace: ruoyi-k8s   #一定要写名称空间
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ruoyi-ui
+  strategy:
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 50%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: ruoyi-ui
+    spec:
+      imagePullSecrets:
+        - name: harbor-cl  #提前在项目下配置访问阿里云的账号密码
+      containers:
+        - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-ui:latest
+ #         readinessProbe:
+ #           httpGet:
+ #             path: /actuator/health
+ #             port: 8080
+ #           timeoutSeconds: 10
+ #           failureThreshold: 30
+ #           periodSeconds: 5
+          imagePullPolicy: IfNotPresent
+          name: app
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 300m
+              memory: 600Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      serviceAccountName: ruoyi-admin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ruoyi-ui
+  name: ruoyi-ui
+  namespace: ruoyi-k8s
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
+      nodePort: 32249
+  selector:
+    app: ruoyi-ui
+  sessionAffinity: None
+  type: NodePort
+
+

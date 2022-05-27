@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ruoyi-gen
+  name: ruoyi-gen
+  namespace: ruoyi-k8s   #一定要写名称空间
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ruoyi-gen
+  strategy:
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 50%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: ruoyi-gen
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+      containers:
+        - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-gen:latest
+ #         readinessProbe:
+ #           httpGet:
+ #             path: /actuator/health
+ #             port: 8080
+ #           timeoutSeconds: 10
+ #           failureThreshold: 30
+ #           periodSeconds: 5
+          imagePullPolicy: IfNotPresent
+          name: app
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: TZ
+              value: Asia/Shanghai
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+          resources:
+            limits: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      serviceAccountName: ruoyi-admin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ruoyi-gen
+  name: ruoyi-gen
+  namespace: ruoyi-k8s
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: ruoyi-gen
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ruoyi-gen
+  namespace: ruoyi-k8s
+  labels:
+    spring.cloud.kubernetes.config: "true"
+data:
+  application.yml: |-
+    # spring配置
+    spring:
+      redis:
+        host: 172.16.84.18
+        port: 31535
+        password: '@WSX3edc'
+      datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://172.16.84.18:32456/ry?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: root
+        password: '@WSX3edc'
+    
+    # mybatis配置
+    mybatis:
+      # 搜索指定包别名
+      typeAliasesPackage: com.ruoyi.gen.domain
+      # 配置mapper的扫描，找到所有的mapper.xml映射文件
+      mapperLocations: classpath:mapper/**/*.xml
+    
+    # swagger配置
+    swagger:
+      title: 代码生成接口文档
+      license: Powered By ruoyi
+      licenseUrl: https://ruoyi.vip
+    
+    # 代码生成
+    gen:
+      # 作者
+      author: ruoyi
+      # 默认生成包路径 system 需改成自己的模块名称 如 system monitor tool
+      packageName: com.ruoyi.system
+      # 自动去除表前缀，默认是false
+      autoRemovePre: false
+      # 表前缀（生成类名不会包含表前缀，多个用逗号分隔）
+      tablePrefix: sys_
+      
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: "*"
+      endpoint:
+        restart:
+          enabled: true
+    

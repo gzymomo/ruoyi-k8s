@@ -1,0 +1,28 @@
+# Tomcat
+server:
+  port: 8080
+
+# Spring
+spring:
+  application:
+    # 应用名称
+    name: ruoyi-gateway
+  profiles:
+    # 环境配置
+    active: dev
+  main:
+    allow-circular-references: true
+    allow-bean-definition-overriding: true
+    cloud-platform: KUBERNETES
+  cloud:
+    kubernetes:
+      reload:
+        enabled: false
+        strategy: refresh
+        mode: event
+      config:
+        sources:
+          - name: ${spring.application.name}
+            namespace: ruoyi-k8s
+      loadbalancer:
+        mode: SERVICE

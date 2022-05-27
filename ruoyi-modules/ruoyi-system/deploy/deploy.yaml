@@ -1,0 +1,177 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ruoyi-system
+  name: ruoyi-system
+  namespace: ruoyi-k8s   #一定要写名称空间
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ruoyi-system
+  strategy:
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 50%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: ruoyi-system
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+      containers:
+        - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-system:latest
+ #         readinessProbe:
+ #           httpGet:
+ #             path: /actuator/health
+ #             port: 8080
+ #           timeoutSeconds: 10
+ #           failureThreshold: 30
+ #           periodSeconds: 5
+          imagePullPolicy: IfNotPresent
+          name: app
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: TZ
+              value: Asia/Shanghai
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      serviceAccountName: ruoyi-admin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ruoyi-system
+  name: ruoyi-system
+  namespace: ruoyi-k8s
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: ruoyi-system
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ruoyi-system
+  namespace: ruoyi-k8s
+  labels:
+    spring.cloud.kubernetes.config: "true"
+data:
+  application.yaml: |-
+    spring:
+      profiles: dev
+      redis:
+        host: 172.16.84.18
+        port: 31535
+        password: '@WSX3edc'
+      datasource:
+        druid:
+          stat-view-servlet:
+            enabled: true
+            loginUsername: admin
+            loginPassword: 123456
+        dynamic:
+          druid:
+            initial-size: 5
+            min-idle: 5
+            maxActive: 20
+            maxWait: 60000
+            timeBetweenEvictionRunsMillis: 60000
+            minEvictableIdleTimeMillis: 300000
+            validationQuery: SELECT 1 FROM DUAL
+            testWhileIdle: true
+            testOnBorrow: false
+            testOnReturn: false
+            poolPreparedStatements: true
+            maxPoolPreparedStatementPerConnectionSize: 20
+            filters: stat,slf4j
+            connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+          datasource:
+            # 主库数据源
+            master:
+              driver-class-name: com.mysql.cj.jdbc.Driver
+              url: jdbc:mysql://172.16.84.18:32456/ry?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+              username: root
+              password: '@WSX3edc'
+              # 从库数据源
+              # slave:
+              # username: 
+              # password: 
+              # url: 
+              # driver-class-name: 
+          # seata: true    # 开启seata代理，开启后默认每个数据源都代理，如果某个不需要代理可单独关闭
+    # seata配置
+    seata:
+      # 默认关闭，如需启用spring.datasource.dynami.seata需要同时开启
+      enabled: false
+      # Seata 应用编号，默认为 ${spring.application.name}
+      application-id: ${spring.application.name}
+      # Seata 事务组编号，用于 TC 集群名
+      tx-service-group: ${spring.application.name}-group
+      # 关闭自动代理
+      enable-auto-data-source-proxy: false
+      # 服务配置项
+      service:
+        # 虚拟组和分组的映射
+        vgroup-mapping:
+          ruoyi-system-group: default
+      config:
+        type: nacos
+        nacos:
+          serverAddr: 172.16.84.18:30071
+          group: SEATA_GROUP
+          namespace:
+      registry:
+        type: nacos
+        nacos:
+          application: seata-server
+          server-addr: 172.16.84.18:30071
+          namespace:
+        
+    
+    # mybatis配置
+    mybatis:
+      # 搜索指定包别名
+      typeAliasesPackage: com.ruoyi.system
+      # 配置mapper的扫描，找到所有的mapper.xml映射文件
+      mapperLocations: classpath:mapper/**/*.xml
+    
+    # swagger配置
+    swagger:
+      title: 系统模块接口文档
+      license: Powered By ruoyi
+      licenseUrl: https://ruoyi.vip
+            
+    
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: "*"
+      endpoint:
+        restart:
+          enabled: true
