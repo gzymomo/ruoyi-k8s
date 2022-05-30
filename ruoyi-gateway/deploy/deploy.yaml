@@ -28,13 +28,13 @@ spec:
             type: ''
       containers:
         - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-gateway:latest
-          #         readinessProbe:
-          #           httpGet:
-          #             path: /actuator/health
-          #             port: 8080
-          #           timeoutSeconds: 10
-          #           failureThreshold: 30
-          #           periodSeconds: 5
+#          readinessProbe:
+#            httpGet:
+#              path: /actuator/health
+#              port: 8080
+#            timeoutSeconds: 10
+#            failureThreshold: 30
+#            periodSeconds: 5
           imagePullPolicy: IfNotPresent
           name: app
           env:
@@ -43,7 +43,7 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "dev"
           ports:
-            - containerPort: 8080
+            - containerPort: 80
               protocol: TCP
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
@@ -63,14 +63,13 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 8080
+      port: 80
       protocol: TCP
-      targetPort: 8080
-      nodePort: 32607
+      targetPort: 80
   selector:
     app: ruoyi-gateway
   sessionAffinity: None
-  type: NodePort
+  type: ClusterIP
 
 ---
 

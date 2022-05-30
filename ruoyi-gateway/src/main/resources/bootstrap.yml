@@ -1,6 +1,6 @@
 # Tomcat
 server:
-  port: 8080
+  port: 80
 
 # Spring
 spring:
@@ -13,7 +13,7 @@ spring:
   main:
     allow-circular-references: true
     allow-bean-definition-overriding: true
-    cloud-platform: KUBERNETES
+    cloud-platform: kubernetes
   cloud:
     kubernetes:
       reload:
@@ -25,4 +25,4 @@ spring:
           - name: ${spring.application.name}
             namespace: ruoyi-k8s
       loadbalancer:
-        mode: SERVICE
+        mode: service

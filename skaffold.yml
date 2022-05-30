@@ -3,6 +3,7 @@ kind: Config
 build:
   tagPolicy:
     sha256: {}
+#    gitCommit: {}
   artifacts:
     - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-ui
       context: ./ruoyi-ui/
@@ -28,11 +29,11 @@ deploy:
   kubectl:
     manifests:
       #- ./k8s/*.yaml
-#      - ./ruoyi-ui/deploy/*.yaml
-#      - ./ruoyi-gateway/deploy/*.yaml
-#      - ./ruoyi-auth/deploy/*.yaml
-#      - ./ruoyi-modules/ruoyi-system/deploy/*.yaml
-#      - ./ruoyi-modules/ruoyi-job/deploy/*.yaml
-#      - ./ruoyi-modules/ruoyi-gen/deploy/*.yaml
-#      - ./ruoyi-modules/ruoyi-file/deploy/*.yaml
-#      - ./ruoyi-visual/ruoyi-monitor/deploy/*.yaml
+      - ./ruoyi-ui/deploy/*.yaml
+      - ./ruoyi-gateway/deploy/*.yaml
+      - ./ruoyi-auth/deploy/*.yaml
+      - ./ruoyi-modules/ruoyi-system/deploy/*.yaml
+      - ./ruoyi-modules/ruoyi-job/deploy/*.yaml
+      - ./ruoyi-modules/ruoyi-gen/deploy/*.yaml
+      - ./ruoyi-modules/ruoyi-file/deploy/*.yaml
+      - ./ruoyi-visual/ruoyi-monitor/deploy/*.yaml

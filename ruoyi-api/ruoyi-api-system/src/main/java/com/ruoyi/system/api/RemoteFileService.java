@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.core.constant.ServiceNameConstants;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.system.api.domain.SysFile;
-import com.ruoyi.system.api.factory.RemoteFileFallbackFactory;
 
 /**
  * 文件服务

@@ -1,11 +1,12 @@
 # Tomcat
 server:
-  port: 8080
+  port: 80
 
 # Spring
 spring:
   main:
     allow-circular-references: true
+    allow-bean-definition-overriding: true
     cloud-platform: KUBERNETES
   application:
     # 应用名称
@@ -24,5 +25,12 @@ spring:
           - name: ${spring.application.name}
             namespace: ruoyi-k8s
       loadbalancer:
-        mode: SERVICE
+        mode: service
+        enabled: true
+  boot:
+    admin:
+      ui:
+        title: 若依服务状态监控
+      discovery:
+        enabled: true
 

@@ -31,14 +31,14 @@ spec:
  #         readinessProbe:
  #           httpGet:
  #             path: /actuator/health
- #             port: 8080
+ #             port: 80
  #           timeoutSeconds: 10
  #           failureThreshold: 30
  #           periodSeconds: 5
           imagePullPolicy: IfNotPresent
           name: app
           ports:
-            - containerPort: 8080
+            - containerPort: 80
               protocol: TCP
           env:
             - name: TZ
@@ -63,9 +63,9 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 8080
+      port: 80
       protocol: TCP
-      targetPort: 8080
+      targetPort: 80
   selector:
     app: ruoyi-system
   sessionAffinity: None

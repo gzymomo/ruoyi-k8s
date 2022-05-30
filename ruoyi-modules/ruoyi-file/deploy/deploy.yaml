@@ -38,7 +38,7 @@ spec:
           imagePullPolicy: IfNotPresent
           name: app
           ports:
-            - containerPort: 8080
+            - containerPort: 80
               protocol: TCP
           env:
             - name: TZ
@@ -64,9 +64,9 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 8080
+      port: 80
       protocol: TCP
-      targetPort: 8080
+      targetPort: 80
   selector:
     app: ruoyi-file
   sessionAffinity: None
@@ -85,7 +85,7 @@ data:
   application.yml: |-
     # 本地文件上传
     file:
-      domain: http://127.0.0.1:8080
+      domain: http://127.0.0.1:80
       path: /data/
       prefix: /statics
     

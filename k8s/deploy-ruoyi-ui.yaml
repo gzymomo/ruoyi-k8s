@@ -61,7 +61,6 @@ spec:
       port: 80
       protocol: TCP
       targetPort: 80
-      nodePort: 32249
   selector:
     app: ruoyi-ui
   sessionAffinity: None
