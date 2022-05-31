@@ -344,7 +344,7 @@ pipeline {
         stage('发送确认邮件') {
             agent none
             steps {
-                mail(to: 'haotian.liu@pacteraedge.com', subject: '构建结果', body: "构建成功了  $BUILD_NUMBER")
+                mail(to: 'xxx', subject: '构建结果', body: "构建成功了  $BUILD_NUMBER")
             }
         }
 
