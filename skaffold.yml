@@ -5,22 +5,22 @@ build:
     sha256: {}
 #    gitCommit: {}
   artifacts:
-    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-ui
-      context: ./ruoyi-ui/
-    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-gateway
-      context: ./ruoyi-gateway/
+#    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-ui
+#      context: ./ruoyi-ui/
+#    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-gateway
+#      context: ./ruoyi-gateway/
     - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-auth
       context: ./ruoyi-auth
     - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-system
       context: ./ruoyi-modules/ruoyi-system/
-    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-job
-      context: ./ruoyi-modules/ruoyi-job/
-    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-gen
-      context: ./ruoyi-modules/ruoyi-gen/
-    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-file
-      context: ./ruoyi-modules/ruoyi-file/
-    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-visual-monitor
-      context: ./ruoyi-visual/ruoyi-monitor/
+#    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-job
+#      context: ./ruoyi-modules/ruoyi-job/
+#    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-gen
+#      context: ./ruoyi-modules/ruoyi-gen/
+#    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-file
+#      context: ./ruoyi-modules/ruoyi-file/
+#    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-visual-monitor
+#      context: ./ruoyi-visual/ruoyi-monitor/
 
 
 
@@ -29,11 +29,11 @@ deploy:
   kubectl:
     manifests:
       #- ./k8s/*.yaml
-      - ./ruoyi-ui/deploy/*.yaml
-      - ./ruoyi-gateway/deploy/*.yaml
+#      - ./ruoyi-ui/deploy/*.yaml
+#      - ./ruoyi-gateway/deploy/*.yaml
       - ./ruoyi-auth/deploy/*.yaml
       - ./ruoyi-modules/ruoyi-system/deploy/*.yaml
-      - ./ruoyi-modules/ruoyi-job/deploy/*.yaml
-      - ./ruoyi-modules/ruoyi-gen/deploy/*.yaml
-      - ./ruoyi-modules/ruoyi-file/deploy/*.yaml
-      - ./ruoyi-visual/ruoyi-monitor/deploy/*.yaml
+#      - ./ruoyi-modules/ruoyi-job/deploy/*.yaml
+#      - ./ruoyi-modules/ruoyi-gen/deploy/*.yaml
+#      - ./ruoyi-modules/ruoyi-file/deploy/*.yaml
+#      - ./ruoyi-visual/ruoyi-monitor/deploy/*.yaml

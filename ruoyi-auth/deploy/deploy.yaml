@@ -104,4 +104,7 @@ data:
       endpoint:
         restart:
           enabled: true
-          
+    # 验证码
+    captcha:
+      enabled: true
+      type: math

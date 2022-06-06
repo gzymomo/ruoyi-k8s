@@ -24,10 +24,6 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-kubernetes-client-loadbalancer</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-kubernetes-fabric8-istio</artifactId>-->
-<!--        </dependency>-->
 
         <!-- SpringCloud Gateway -->
         <dependency>
