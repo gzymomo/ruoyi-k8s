@@ -1,0 +1,78 @@
+kind: EnvoyFilter
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: gateway-auth-filter
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: GATEWAY
+        listener:
+          filterChain:
+            filter:
+              name: envoy.filters.network.http_connection_manager
+              subFilter:
+                name: envoy.filters.http.router
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.lua.ruoyi
+          typed_config:
+            '@type': type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+            inlineCode: >
+              function isIgnoreUrls(apiUrl)
+                local paramIndex=string.find(apiUrl,"?")
+                if paramIndex ~= nil then
+                  apiUrl=string.sub(apiUrl,1,paramIndex-1)
+                end
+                -- only auth the url starts with '/prod-api'
+                local apiIndex =string.find(apiUrl, "/prod-api/")
+                if apiIndex == 1 then
+                  return false
+                else
+                  return true
+                end
+              end
+
+              function envoy_on_request(handle)
+                  local apiUrl=handle:headers():get(":path")
+                  handle:logErr(apiUrl)
+                  if not isIgnoreUrls(apiUrl) then
+                      handle:logErr(isIgnoreUrls(apiUrl))
+                      return
+                  else 
+                     handle:logInfo("Start Authorization")
+                     local headers, body = handle:httpCall(
+                      "outbound|80||ruoyi-auth.ruoyi-k8s.svc.cluster.local",
+                      {
+                       [":method"] = "POST",
+                       [":path"] = "/authentication",
+                       [":authority"] = "ruoyi-auth.ruoyi-k8s.svc.cluster.local",
+                       ["authorization"] = handle:headers():get("Authorization")
+                      },
+                     "",
+                     5000)
+                     --handle:logErr("Start Authorization")
+                     handle:logErr(headers["status"])
+                     if  headers["status"] ~= "200" then
+                       request_handle:respond(
+                           {[":status"] = headers["status"]},
+                           "auth fail"
+                         )
+                       do return end
+                     end
+                     handle:headers():add("username", headers["username"])
+                     handle:headers():add("user_id", headers["user_id"])
+                     handle:headers():add("user_key", headers["user_key"])
+                  end
+                  --handle:logErr("Demo gateway-auth-filter: end success with path==>"..apiUrl)
+              end
+
+              function envoy_on_response(handle)
+                --handle:headers():add("x-from-proxy","istio-ingressgateway")
+              end
+
