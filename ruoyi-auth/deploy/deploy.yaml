@@ -104,7 +104,17 @@ data:
       endpoint:
         restart:
           enabled: true
-    # 验证码
-    captcha:
-      enabled: true
-      type: math
+    # 安全配置
+    security:
+      # 验证码
+      captcha:
+        enabled: true
+        type: math
+      # 不校验白名单
+      ignore:
+        whites:
+          - /auth/logout
+          - /auth/login
+          - /auth/register
+          - /*/v2/api-docs
+          - /csrf
