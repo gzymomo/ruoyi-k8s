@@ -25,16 +25,7 @@ spec:
   gateways:
     - ruoyi-k8s-gateway
   http:
-    - match:
-      - uri:
-          prefix: /prod-api/code
-      rewrite:
-        uri: /code
-      route:
-      - destination:
-          port:
-            number: 80
-          host: ruoyi-auth
+
     - match:
       - uri:
           prefix: /prod-api/auth/
@@ -55,6 +46,46 @@ spec:
           port:
             number: 80
           host: ruoyi-system
+    - match:
+        - uri:
+            prefix: /prod-api/schedule/
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            port:
+              number: 80
+            host: ruoyi-job
+    - match:
+        - uri:
+            prefix: /prod-api/file/
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            port:
+              number: 80
+            host: ruoyi-file
+    - match:
+        - uri:
+            prefix: /prod-api/code/
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            port:
+              number: 80
+            host: ruoyi-gen
+    - match:
+        - uri:
+            prefix: /prod-api/code
+      rewrite:
+        uri: /code
+      route:
+        - destination:
+            port:
+              number: 80
+            host: ruoyi-auth
     - match:
       - uri:
           prefix: /

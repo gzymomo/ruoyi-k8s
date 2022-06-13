@@ -5,8 +5,8 @@ build:
     sha256: {}
 #    gitCommit: {}
   artifacts:
-#    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-ui
-#      context: ./ruoyi-ui/
+    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-ui
+      context: ./ruoyi-ui/
 #    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-gateway
 #      context: ./ruoyi-gateway/
     - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-auth
@@ -29,11 +29,15 @@ deploy:
   kubectl:
     manifests:
       #- ./k8s/*.yaml
-#      - ./ruoyi-ui/deploy/*.yaml
+#      - ./k8s/grafana.yaml
+#      - ./k8s/prometheus.yaml
+      - ./k8s/gateway.yaml
+      - ./k8s/gateway-auth-filter.yaml
+      - ./ruoyi-ui/deploy/*.yaml
 #      - ./ruoyi-gateway/deploy/*.yaml
       - ./ruoyi-auth/deploy/*.yaml
       - ./ruoyi-modules/ruoyi-system/deploy/*.yaml
-#      - ./ruoyi-modules/ruoyi-job/deploy/*.yaml
-#      - ./ruoyi-modules/ruoyi-gen/deploy/*.yaml
-#      - ./ruoyi-modules/ruoyi-file/deploy/*.yaml
+      - ./ruoyi-modules/ruoyi-job/deploy/*.yaml
+      - ./ruoyi-modules/ruoyi-gen/deploy/*.yaml
+      - ./ruoyi-modules/ruoyi-file/deploy/*.yaml
 #      - ./ruoyi-visual/ruoyi-monitor/deploy/*.yaml

@@ -28,13 +28,13 @@ spec:
             type: ''
       containers:
         - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-gen:latest
- #         readinessProbe:
- #           httpGet:
- #             path: /actuator/health
- #             port: 80
- #           timeoutSeconds: 10
- #           failureThreshold: 30
- #           periodSeconds: 5
+          #         readinessProbe:
+          #           httpGet:
+          #             path: /actuator/health
+          #             port: 8080
+          #           timeoutSeconds: 10
+          #           failureThreshold: 30
+          #           periodSeconds: 5
           imagePullPolicy: IfNotPresent
           name: app
           ports:
@@ -61,6 +61,10 @@ metadata:
     app: ruoyi-gen
   name: ruoyi-gen
   namespace: ruoyi-k8s
+  annotations:
+    prometheus.io/port: "80" #端口配自己服务的端口
+    prometheus.io/spring: "true"
+    prometheus.io/path: "actuator/prometheus"
 spec:
   ports:
     - name: http
@@ -117,7 +121,7 @@ data:
       autoRemovePre: false
       # 表前缀（生成类名不会包含表前缀，多个用逗号分隔）
       tablePrefix: sys_
-      
+    
     management:
       endpoints:
         web:
@@ -126,4 +130,7 @@ data:
       endpoint:
         restart:
           enabled: true
+      metrics:
+        tags:
+          application: ${spring.application.name}
     

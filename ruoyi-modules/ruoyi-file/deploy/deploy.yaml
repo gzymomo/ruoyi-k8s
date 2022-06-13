@@ -61,6 +61,10 @@ metadata:
     app: ruoyi-file
   name: ruoyi-file
   namespace: ruoyi-k8s
+  annotations:
+    prometheus.io/port: "80" #端口配自己服务的端口
+    prometheus.io/spring: "true"
+    prometheus.io/path: "actuator/prometheus"
 spec:
   ports:
     - name: http
@@ -111,3 +115,6 @@ data:
       endpoint:
         restart:
           enabled: true
+      metrics:
+        tags:
+          application: ${spring.application.name}
