@@ -1,6 +1,10 @@
 package com.ruoyi.auth.controller;
 
 import javax.servlet.http.HttpServletRequest;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.ruoyi.auth.service.ValidateCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +29,10 @@ import com.ruoyi.system.api.model.LoginUser;
 @RestController
 public class TokenController
 {
+
+    @Autowired
+    private ValidateCodeService validateCodeService;
+
     @Autowired
     private TokenService tokenService;
 
@@ -34,6 +42,8 @@ public class TokenController
     @PostMapping("login")
     public R<?> login(@RequestBody LoginBody form)
     {
+        // 验证验证码
+        validateCodeService.checkCaptcha(form.getCode(), form.getUuid());
         // 用户登录
         LoginUser userInfo = sysLoginService.login(form.getUsername(), form.getPassword());
         // 获取登录token
@@ -48,7 +58,7 @@ public class TokenController
         {
             String username = JwtUtils.getUserName(token);
             // 删除用户缓存记录
-            AuthUtil.logoutByToken(token);
+             AuthUtil.logoutByToken(token);
             // 记录用户退出日志
             sysLoginService.logout(username);
         }
