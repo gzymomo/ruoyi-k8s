@@ -17,6 +17,18 @@ public class LoginBody
      */
     private String password;
 
+    /**
+     * 验证码
+     */
+    private String code;
+
+    /**
+     * uuid
+     */
+    private String uuid;
+
+
+
     public String getUsername()
     {
         return username;
@@ -35,5 +47,21 @@ public class LoginBody
     public void setPassword(String password)
     {
         this.password = password;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }
