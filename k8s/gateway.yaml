@@ -1,0 +1,65 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: ruoyi-k8s-gateway
+  namespace: ruoyi-k8s
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "ruoyi-k8s.kubernetes.com"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: ruoyi-k8s-vsvc
+  namespace: ruoyi-k8s
+spec:
+  hosts:
+    - "ruoyi-k8s.kubernetes.com"
+  gateways:
+    - ruoyi-k8s-gateway
+  http:
+    - match:
+      - uri:
+          prefix: /prod-api/code
+      rewrite:
+        uri: /code
+      route:
+      - destination:
+          port:
+            number: 80
+          host: ruoyi-auth
+    - match:
+      - uri:
+          prefix: /prod-api/auth/
+      rewrite:
+        uri: /
+      route:
+      - destination:
+          port:
+            number: 80
+          host: ruoyi-auth
+    - match:
+      - uri:
+          prefix: /prod-api/system/
+      rewrite:
+        uri: /
+      route:
+      - destination:
+          port:
+            number: 80
+          host: ruoyi-system
+    - match:
+      - uri:
+          prefix: /
+      route:
+        - destination:
+            host: ruoyi-ui
+            port:
+              number: 80
