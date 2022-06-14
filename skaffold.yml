@@ -13,12 +13,12 @@ build:
       context: ./ruoyi-auth
     - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-system
       context: ./ruoyi-modules/ruoyi-system/
-#    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-job
-#      context: ./ruoyi-modules/ruoyi-job/
-#    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-gen
-#      context: ./ruoyi-modules/ruoyi-gen/
-#    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-file
-#      context: ./ruoyi-modules/ruoyi-file/
+    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-job
+      context: ./ruoyi-modules/ruoyi-job/
+    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-gen
+      context: ./ruoyi-modules/ruoyi-gen/
+    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-modules-file
+      context: ./ruoyi-modules/ruoyi-file/
 #    - image: harbor.bk.rfios.com/ruoyi-k8s/ruoyi-visual-monitor
 #      context: ./ruoyi-visual/ruoyi-monitor/
 
